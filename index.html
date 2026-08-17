@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Growing Garden · All About Me</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF8EC;
+    --paper:#FFFDF8;
+    --plum:#3A2E39;
+    --plum-soft:#6E6178;
+    --sun:#FFC93C;
+    --sun-deep:#F2A900;
+    --sky:#4EC5D6;
+    --leaf:#4CAF7D;
+    --leaf-deep:#2E8B57;
+    --coral:#FF7A66;
+    --line:rgba(58,46,57,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Quicksand',sans-serif;
+    background:var(--cream);
+    background-image:
+      radial-gradient(circle at 10% 15%, rgba(255,201,60,0.18) 0%, transparent 45%),
+      radial-gradient(circle at 90% 10%, rgba(78,197,214,0.16) 0%, transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(76,175,125,0.14) 0%, transparent 50%);
+    color:var(--plum);
+    min-height:100vh;
+    padding:1rem;
+  }
+  .container{max-width:1100px;margin:0 auto;}
+
+  /* HEADER */
+  header{text-align:center;padding:1.25rem 0 .5rem;}
+  .title{
+    font-family:'Fredoka',sans-serif;
+    font-weight:700;
+    font-size:2.4rem;
+    color:var(--leaf-deep);
+    letter-spacing:.01em;
+  }
+  .title .accent{color:var(--coral);}
+  .subtitle{
+    font-family:'Fredoka',sans-serif;
+    font-weight:500;
+    font-size:1rem;
+    color:var(--plum-soft);
+    margin-top:.35rem;
+    letter-spacing:.02em;
+  }
+
+  /* GARDEN PROGRESS TRACK (signature element) */
+  .garden-track{
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:0;
+    margin:1.75rem auto .5rem;
+    max-width:640px;
+    position:relative;
+    padding-bottom:.75rem;
+  }
+  .garden-track::before{
+    content:"";
+    position:absolute;
+    left:6%;
+    right:6%;
+    bottom:1.2rem;
+    height:4px;
+    background:repeating-linear-gradient(90deg, var(--line) 0 10px, transparent 10px 18px);
+    border-radius:2px;
+  }
+  .stage{
+    flex:1;
+    text-align:center;
+    position:relative;
+    z-index:1;
+  }
+  .stage-icon{
+    width:44px;height:44px;
+    margin:0 auto .4rem;
+    border-radius:50%;
+    background:var(--paper);
+    border:2.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;
+    transition:all .4s ease;
+  }
+  .stage.reached .stage-icon{
+    border-color:var(--leaf);
+    background:rgba(76,175,125,0.15);
+    transform:scale(1.12);
+    box-shadow:0 4px 14px rgba(76,175,125,0.35);
+  }
+  .stage-label{
+    font-family:'Fredoka',sans-serif;
+    font-size:.65rem;
+    font-weight:600;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--plum-soft);
+  }
+  .stage.reached .stage-label{color:var(--leaf-deep);}
+
+  .score-line{
+    text-align:center;
+    font-family:'Fredoka',sans-serif;
+    font-size:.85rem;
+    color:var(--plum-soft);
+    margin-bottom:1.75rem;
+  }
+  .score-line strong{color:var(--coral);}
+
+  /* BOARD OF STEPPING STONES */
+  .board{
+    background:var(--paper);
+    border:2px solid var(--line);
+    border-radius:2rem;
+    padding:2rem 1.5rem;
+    box-shadow:0 20px 50px rgba(58,46,57,0.08);
+  }
+  .stones{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(76px,1fr));
+    gap:.85rem;
+  }
+  .stone{
+    aspect-ratio:1;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:1.1rem;
+    color:var(--plum);
+    background:
+      radial-gradient(circle at 32% 28%, #ffffff 0%, #F3EEE3 55%, #E9E2D2 100%);
+    box-shadow:
+      inset 0 -4px 0 rgba(58,46,57,0.1),
+      0 6px 14px rgba(58,46,57,0.1);
+    transition:transform .18s ease, box-shadow .18s ease;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .stone:hover{transform:translateY(-3px);box-shadow:inset 0 -4px 0 rgba(58,46,57,0.1), 0 10px 20px rgba(58,46,57,0.16);}
+  .stone:active{transform:translateY(0);}
+  .stone.done{
+    background:radial-gradient(circle at 32% 28%, #EAFBF2 0%, #CFF0DD 60%, #b9e7cc 100%);
+    color:var(--leaf-deep);
+  }
+  .stone.done::after{
+    content:"🌼";
+    position:absolute;
+    bottom:-8px;
+    font-size:1rem;
+  }
+
+  /* QUESTION OVERLAY */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(58,46,57,0.55);
+    backdrop-filter:blur(6px);
+    display:none;
+    align-items:center;justify-content:center;
+    padding:1.25rem;
+    z-index:1000;
+  }
+  .overlay.active{display:flex;}
+  .qcard{
+    background:var(--paper);
+    border-radius:1.75rem;
+    max-width:480px;width:100%;
+    padding:2.25rem 1.75rem 2rem;
+    position:relative;
+    box-shadow:0 30px 70px rgba(58,46,57,0.3);
+    border:3px solid var(--sun);
+    animation:pop .35s cubic-bezier(.2,1.4,.4,1) both;
+  }
+  @keyframes pop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+  .qcard-close{
+    position:absolute;top:.85rem;right:.95rem;
+    background:none;border:none;font-size:1.4rem;
+    color:var(--plum-soft);cursor:pointer;
+    width:2rem;height:2rem;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .qcard-close:hover{background:rgba(58,46,57,0.08);}
+  .qnum{
+    font-family:'Fredoka',sans-serif;
+    font-size:.75rem;font-weight:600;
+    color:var(--sun-deep);
+    letter-spacing:.08em;text-transform:uppercase;
+    margin-bottom:.5rem;text-align:center;
+  }
+  .qtext{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:1.35rem;
+    text-align:center;
+    line-height:1.35;
+    margin-bottom:1.5rem;
+  }
+  .options{display:flex;flex-direction:column;gap:.75rem;}
+  .opt{
+    font-family:'Quicksand',sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    padding:.9rem 1.1rem;
+    border-radius:1rem;
+    border:2px solid var(--line);
+    background:var(--cream);
+    cursor:pointer;
+    text-align:left;
+    transition:all .2s ease;
+    display:flex;align-items:center;gap:.65rem;
+  }
+  .opt .bullet{
+    width:26px;height:26px;flex:0 0 26px;
+    border-radius:50%;
+    background:var(--paper);
+    border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fredoka',sans-serif;
+    font-size:.8rem;font-weight:600;
+    color:var(--plum-soft);
+  }
+  .opt:hover:not(.locked){border-color:var(--sky);background:rgba(78,197,214,0.1);}
+  .opt.correct{border-color:var(--leaf);background:rgba(76,175,125,0.18);color:var(--leaf-deep);}
+  .opt.correct .bullet{background:var(--leaf);border-color:var(--leaf);color:#fff;}
+  .opt.wrong{border-color:var(--coral);background:rgba(255,122,102,0.14);color:#C2493A;}
+  .opt.wrong .bullet{background:var(--coral);border-color:var(--coral);color:#fff;}
+  .opt.locked{cursor:default;}
+
+  .feedback{
+    margin-top:1.1rem;
+    text-align:center;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:.95rem;
+    min-height:1.4rem;
+  }
+  .feedback.good{color:var(--leaf-deep);}
+  .feedback.bad{color:#C2493A;}
+
+  .qcard-next{
+    display:block;
+    margin:1.1rem auto 0;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:.9rem;
+    padding:.65rem 1.5rem;
+    border-radius:999px;
+    border:none;
+    background:var(--sun);
+    color:#5a3d00;
+    cursor:pointer;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .qcard-next.show{opacity:1;pointer-events:auto;}
+  .qcard-next:hover{background:var(--sun-deep);}
+
+  /* DONE STATE */
+  .all-done{
+    text-align:center;
+    padding:1rem 0 .5rem;
+    font-family:'Fredoka',sans-serif;
+  }
+  .all-done .big-emoji{font-size:2.75rem;margin-bottom:.5rem;}
+  .all-done h2{color:var(--leaf-deep);font-size:1.4rem;margin-bottom:.4rem;}
+  .all-done p{color:var(--plum-soft);font-size:.95rem;}
+
+  @media (max-width:600px){
+    .title{font-size:1.7rem;}
+    .stones{grid-template-columns:repeat(auto-fill, minmax(62px,1fr));gap:.6rem;}
+    .board{padding:1.5rem 1rem;border-radius:1.5rem;}
+    .stage-label{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="title">My Growing <span class="accent">Garden</span></div>
+    <div class="subtitle">All About Me · Tap a stone to answer</div>
+  </header>
+
+  <div class="garden-track" id="gardenTrack">
+    <div class="stage" data-min="0"><div class="stage-icon">🌰</div><div class="stage-label">Seed</div></div>
+    <div class="stage" data-min="6"><div class="stage-icon">🌱</div><div class="stage-label">Sprout</div></div>
+    <div class="stage" data-min="12"><div class="stage-icon">🌿</div><div class="stage-label">Bud</div></div>
+    <div class="stage" data-min="18"><div class="stage-icon">🌸</div><div class="stage-label">Bloom</div></div>
+    <div class="stage" data-min="24"><div class="stage-icon">🌻</div><div class="stage-label">Sunflower</div></div>
+  </div>
+  <div class="score-line">🌼 <strong id="scoreCount">0</strong> of 24 flowers picked</div>
+
+  <div class="board">
+    <div class="stones" id="stones"></div>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="qcard" id="qcard"></div>
+</div>
+
+<script>
+// ---------- HARD-CODED QUESTION DATA ----------
+const questions = [
+  { q: "Which one is a FEELING?", options: ["Happy", "Chair", "Table"], correct: 0 },
+  { q: "You use your NOSE to...", options: ["Hear music", "Smell flowers", "See colors"], correct: 1 },
+  { q: "Which one is part of YOUR body?", options: ["Elbow", "Umbrella", "Backpack"], correct: 0 },
+  { q: "If you feel sad, a good thing to do is...", options: ["Keep it a secret", "Talk to someone you trust", "Yell at a friend"], correct: 1 },
+  { q: "Which word means 'a place you were born and live'?", options: ["Hometown", "Homework", "Hobby"], correct: 0 },
+  { q: "Which one is something you can be GOOD at?", options: ["Drawing", "Raining", "Monday"], correct: 0 },
+  { q: "Your HEART helps your body by...", options: ["Pumping blood", "Making sound", "Growing hair"], correct: 0 },
+  { q: "Which one is a KIND thing to say to a friend?", options: ["You did great!", "Go away!", "That's silly."], correct: 0 },
+  { q: "Which of these is a MEMBER of a family?", options: ["Grandma", "Doctor", "Stranger"], correct: 0 },
+  { q: "You use your EARS to...", options: ["Taste food", "Hear sounds", "Touch things"], correct: 1 },
+  { q: "Which one describes a SAFE choice?", options: ["Wearing a seatbelt", "Talking to strangers", "Crossing without looking"], correct: 0 },
+  { q: "Which of these is something YOU can choose?", options: ["Your favorite color", "The weather today", "Your teacher's name"], correct: 0 },
+  { q: "If you make a mistake, it means...", options: ["You are bad at everything", "You are learning", "You should give up"], correct: 1 },
+  { q: "Which one is a HOBBY?", options: ["Sleeping in class", "Playing soccer", "Brushing teeth"], correct: 1 },
+  { q: "Your SKIN helps you feel...", options: ["Touch, like soft or rough", "Sounds, like loud or quiet", "Tastes, like sweet or sour"], correct: 0 },
+  { q: "Which is a way to show you are PROUD of yourself?", options: ["Smiling after finishing your work", "Hiding your work", "Ignoring your work"], correct: 0 },
+  { q: "Which one is an EMOTION, not a color?", options: ["Excited", "Green", "Purple"], correct: 0 },
+  { q: "A good FRIEND usually...", options: ["Shares and listens", "Never shares", "Only talks about themselves"], correct: 0 },
+  { q: "Which body part do you use to TASTE food?", options: ["Tongue", "Elbow", "Knee"], correct: 0 },
+  { q: "Which one is something that makes YOU special?", options: ["Your own ideas and talents", "Having the same shoes as someone", "Copying a classmate"], correct: 0 },
+  { q: "If a friend feels sad, you can...", options: ["Ask if they're okay", "Laugh at them", "Walk away"], correct: 0 },
+  { q: "Which one shows GROWTH mindset?", options: ["I can't do it yet, but I'll try", "I can't do it, so I quit", "I will never be good at this"], correct: 0 },
+  { q: "Your BRAIN helps you...", options: ["Think and learn", "Digest food", "Grow taller"], correct: 0 },
+  { q: "Which of these is a healthy way to calm down?", options: ["Take deep breaths", "Hold your breath forever", "Ignore your feelings"], correct: 0 }
+];
+
+// ---------- STATE ----------
+let answered = new Array(questions.length).fill(null); // null | true | false
+let currentIndex = null;
+
+// ---------- BUILD BOARD ----------
+const stonesEl = document.getElementById('stones');
+function renderStones(){
+  stonesEl.innerHTML = '';
+  questions.forEach((q, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'stone' + (answered[i] !== null ? ' done' : '');
+    btn.textContent = i + 1;
+    btn.onclick = () => openQuestion(i);
+    stonesEl.appendChild(btn);
+  });
+}
+
+function updateProgress(){
+  const solved = answered.filter(a => a !== null).length;
+  document.getElementById('scoreCount').textContent = solved;
+  document.querySelectorAll('.stage').forEach(stage => {
+    const min = parseInt(stage.dataset.min, 10);
+    stage.classList.toggle('reached', solved >= min);
+  });
+}
+
+// ---------- QUESTION OVERLAY ----------
+const overlay = document.getElementById('overlay');
+const qcard = document.getElementById('qcard');
+
+function openQuestion(i){
+  currentIndex = i;
+  const data = questions[i];
+  const already = answered[i];
+
+  let optsHtml = data.options.map((opt, idx) => {
+    let cls = 'opt';
+    let locked = already !== null ? ' locked' : '';
+    if (already !== null){
+      if (idx === data.correct) cls += ' correct';
+      else if (already === false && idx === already.picked) {}
+    }
+    return `<button class="${cls}${locked}" data-idx="${idx}">
+      <span class="bullet">${String.fromCharCode(65+idx)}</span>${opt}
+    </button>`;
+  }).join('');
+
+  qcard.innerHTML = `
+    <button class="qcard-close" onclick="closeOverlay()">×</button>
+    <div class="qnum">Stone ${i+1} of ${questions.length}</div>
+    <div class="qtext">${data.q}</div>
+    <div class="options" id="optionsList">${optsHtml}</div>
+    <div class="feedback" id="feedback"></div>
+    <button class="qcard-next" id="nextBtn" onclick="nextStone()">Next stone →</button>
+  `;
+
+  overlay.classList.add('active');
+
+  // if already answered, show the result immediately (view-only)
+  if (already !== null){
+    showResultState(already.picked, data.correct, true);
+  } else {
+    document.querySelectorAll('#optionsList .opt').forEach(btn => {
+      btn.addEventListener('click', () => selectOption(parseInt(btn.dataset.idx,10)));
+    });
+  }
+}
+
+function selectOption(idx){
+  const data = questions[currentIndex];
+  const isCorrect = idx === data.correct;
+  answered[currentIndex] = { picked: idx, correct: isCorrect };
+  showResultState(idx, data.correct, false);
+  renderStones();
+  updateProgress();
+}
+
+function showResultState(pickedIdx, correctIdx, isReview){
+  const buttons = document.querySelectorAll('#optionsList .opt');
+  buttons.forEach((btn, idx) => {
+    btn.classList.add('locked');
+    if (idx === correctIdx) btn.classList.add('correct');
+    if (idx === pickedIdx && idx !== correctIdx) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('feedback');
+  const wasCorrect = pickedIdx === correctIdx;
+  fb.textContent = wasCorrect
+    ? (isReview ? "You got this one! 🌟" : "Yes! Well done! 🌟")
+    : (isReview ? "The correct answer is highlighted above." : "Good try! Here's the right one. 💛");
+  fb.className = 'feedback ' + (wasCorrect ? 'good' : 'bad');
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextStone(){
+  const total = questions.length;
+  let next = currentIndex;
+  for (let step = 1; step <= total; step++){
+    const candidate = (currentIndex + step) % total;
+    if (answered[candidate] === null){ next = candidate; break; }
+  }
+  const allDone = answered.every(a => a !== null);
+  if (allDone){
+    showAllDone();
+  } else {
+    openQuestion(next);
+  }
+}
+
+function showAllDone(){
+  const correctCount = answered.filter(a => a.correct).length;
+  qcard.innerHTML = `
+    <button class="qcard-close" onclick="closeOverlay()">×</button>
+    <div class="all-done">
+      <div class="big-emoji">🌻</div>
+      <h2>Your garden is in full bloom!</h2>
+      <p>You picked ${correctCount} of ${questions.length} flowers correctly.</p>
+      <button class="qcard-next show" style="position:static;margin-top:1.25rem;" onclick="closeOverlay()">Close</button>
+    </div>
+  `;
+}
+
+function closeOverlay(){
+  overlay.classList.remove('active');
+  currentIndex = null;
+}
+overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
+
+// ---------- INIT ----------
+renderStones();
+updateProgress();
+</script>
+</body>
+</html>
