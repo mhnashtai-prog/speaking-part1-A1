@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Growing Garden · All About Me</title>
+<title>Grammar Garden · Tenses & Prepositions</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -16,6 +16,7 @@
     --sky:#4EC5D6;
     --leaf:#4CAF7D;
     --leaf-deep:#2E8B57;
+    --leaf-glow:#8CE4B0;
     --coral:#FF7A66;
     --line:rgba(58,46,57,0.12);
   }
@@ -33,7 +34,6 @@
   }
   .container{max-width:1100px;margin:0 auto;}
 
-  /* HEADER */
   header{text-align:center;padding:1.25rem 0 .5rem;}
   .title{
     font-family:'Fredoka',sans-serif;
@@ -52,7 +52,7 @@
     letter-spacing:.02em;
   }
 
-  /* GARDEN PROGRESS TRACK (signature element) */
+  /* GARDEN PROGRESS TRACK */
   .garden-track{
     display:flex;
     align-items:flex-end;
@@ -73,15 +73,9 @@
     background:repeating-linear-gradient(90deg, var(--line) 0 10px, transparent 10px 18px);
     border-radius:2px;
   }
-  .stage{
-    flex:1;
-    text-align:center;
-    position:relative;
-    z-index:1;
-  }
+  .stage{flex:1;text-align:center;position:relative;z-index:1;}
   .stage-icon{
-    width:44px;height:44px;
-    margin:0 auto .4rem;
+    width:44px;height:44px;margin:0 auto .4rem;
     border-radius:50%;
     background:var(--paper);
     border:2.5px solid var(--line);
@@ -97,10 +91,8 @@
   }
   .stage-label{
     font-family:'Fredoka',sans-serif;
-    font-size:.65rem;
-    font-weight:600;
-    letter-spacing:.06em;
-    text-transform:uppercase;
+    font-size:.65rem;font-weight:600;
+    letter-spacing:.06em;text-transform:uppercase;
     color:var(--plum-soft);
   }
   .stage.reached .stage-label{color:var(--leaf-deep);}
@@ -114,7 +106,7 @@
   }
   .score-line strong{color:var(--coral);}
 
-  /* BOARD OF STEPPING STONES */
+  /* BOARD */
   .board{
     background:var(--paper);
     border:2px solid var(--line);
@@ -125,10 +117,14 @@
   .stones{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(76px,1fr));
-    gap:.85rem;
+    gap:1.1rem .85rem;
+  }
+  .stone-wrap{
+    position:relative;
+    aspect-ratio:1;
   }
   .stone{
-    aspect-ratio:1;
+    width:100%;height:100%;
     border-radius:50%;
     border:none;
     cursor:pointer;
@@ -136,26 +132,64 @@
     font-weight:600;
     font-size:1.1rem;
     color:var(--plum);
-    background:
-      radial-gradient(circle at 32% 28%, #ffffff 0%, #F3EEE3 55%, #E9E2D2 100%);
-    box-shadow:
-      inset 0 -4px 0 rgba(58,46,57,0.1),
-      0 6px 14px rgba(58,46,57,0.1);
-    transition:transform .18s ease, box-shadow .18s ease;
+    background:radial-gradient(circle at 32% 28%, #ffffff 0%, #F3EEE3 55%, #E9E2D2 100%);
+    box-shadow:inset 0 -4px 0 rgba(58,46,57,0.1), 0 6px 14px rgba(58,46,57,0.1);
+    transition:transform .18s ease, box-shadow .18s ease, background .5s ease, color .5s ease;
     display:flex;align-items:center;justify-content:center;
     position:relative;
+    z-index:2;
   }
   .stone:hover{transform:translateY(-3px);box-shadow:inset 0 -4px 0 rgba(58,46,57,0.1), 0 10px 20px rgba(58,46,57,0.16);}
   .stone:active{transform:translateY(0);}
-  .stone.done{
-    background:radial-gradient(circle at 32% 28%, #EAFBF2 0%, #CFF0DD 60%, #b9e7cc 100%);
-    color:var(--leaf-deep);
+
+  .stone.correct{
+    background:radial-gradient(circle at 32% 28%, var(--leaf-glow) 0%, var(--leaf) 55%, var(--leaf-deep) 100%);
+    color:#fff;
+    box-shadow:inset 0 -4px 0 rgba(0,0,0,0.12), 0 8px 18px rgba(46,139,87,0.4);
   }
-  .stone.done::after{
-    content:"🌼";
+  .stone.correct::after{
+    content:"🌿";
     position:absolute;
-    bottom:-8px;
+    bottom:-9px;
     font-size:1rem;
+  }
+  .stone.wrong{
+    background:radial-gradient(circle at 32% 28%, #FFE4DE 0%, #FFC7B9 60%, #F3A48F 100%);
+    color:#8a4636;
+  }
+
+  .stone-burst{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:3;
+  }
+  .spark{
+    position:absolute;
+    top:50%;left:50%;
+    width:6px;height:6px;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    animation:spark-fly .75s ease-out forwards;
+  }
+  @keyframes spark-fly{
+    0%{ transform:translate(-50%,-50%) translate(0,0) scale(1); opacity:1; }
+    70%{ opacity:1; }
+    100%{ transform:translate(-50%,-50%) translate(var(--dx), var(--dy)) scale(.3); opacity:0; }
+  }
+  .ring{
+    position:absolute;
+    top:50%;left:50%;
+    width:20px;height:20px;
+    margin:-10px 0 0 -10px;
+    border-radius:50%;
+    border:3px solid var(--leaf);
+    opacity:.9;
+    animation:ring-pop .6s ease-out forwards;
+  }
+  @keyframes ring-pop{
+    0%{ transform:scale(.2); opacity:.9; }
+    100%{ transform:scale(3.4); opacity:0; }
   }
 
   /* QUESTION OVERLAY */
@@ -188,6 +222,14 @@
     display:flex;align-items:center;justify-content:center;
   }
   .qcard-close:hover{background:rgba(58,46,57,0.08);}
+  .qtag{
+    font-family:'Fredoka',sans-serif;
+    font-size:.7rem;font-weight:600;
+    color:var(--sky);
+    letter-spacing:.08em;text-transform:uppercase;
+    text-align:center;
+    margin-bottom:.35rem;
+  }
   .qnum{
     font-family:'Fredoka',sans-serif;
     font-size:.75rem;font-weight:600;
@@ -198,10 +240,15 @@
   .qtext{
     font-family:'Fredoka',sans-serif;
     font-weight:600;
-    font-size:1.35rem;
+    font-size:1.3rem;
     text-align:center;
-    line-height:1.35;
+    line-height:1.4;
     margin-bottom:1.5rem;
+  }
+  .qtext .blank{
+    display:inline-block;
+    min-width:3.2em;
+    border-bottom:3px solid var(--sun-deep);
   }
   .options{display:flex;flex-direction:column;gap:.75rem;}
   .opt{
@@ -245,38 +292,21 @@
   .feedback.good{color:var(--leaf-deep);}
   .feedback.bad{color:#C2493A;}
 
-  .qcard-next{
-    display:block;
-    margin:1.1rem auto 0;
-    font-family:'Fredoka',sans-serif;
-    font-weight:600;
-    font-size:.9rem;
-    padding:.65rem 1.5rem;
-    border-radius:999px;
-    border:none;
-    background:var(--sun);
-    color:#5a3d00;
-    cursor:pointer;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .25s ease;
-  }
-  .qcard-next.show{opacity:1;pointer-events:auto;}
-  .qcard-next:hover{background:var(--sun-deep);}
-
-  /* DONE STATE */
-  .all-done{
-    text-align:center;
-    padding:1rem 0 .5rem;
-    font-family:'Fredoka',sans-serif;
-  }
+  .all-done{text-align:center;padding:1rem 0 .5rem;font-family:'Fredoka',sans-serif;}
   .all-done .big-emoji{font-size:2.75rem;margin-bottom:.5rem;}
   .all-done h2{color:var(--leaf-deep);font-size:1.4rem;margin-bottom:.4rem;}
   .all-done p{color:var(--plum-soft);font-size:.95rem;}
+  .all-done button{
+    margin-top:1.25rem;
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:.9rem;
+    padding:.65rem 1.5rem;border-radius:999px;border:none;
+    background:var(--sun);color:#5a3d00;cursor:pointer;
+  }
+  .all-done button:hover{background:var(--sun-deep);}
 
   @media (max-width:600px){
     .title{font-size:1.7rem;}
-    .stones{grid-template-columns:repeat(auto-fill, minmax(62px,1fr));gap:.6rem;}
+    .stones{grid-template-columns:repeat(auto-fill, minmax(62px,1fr));gap:.9rem .6rem;}
     .board{padding:1.5rem 1rem;border-radius:1.5rem;}
     .stage-label{display:none;}
   }
@@ -286,8 +316,8 @@
 <div class="container">
 
   <header>
-    <div class="title">My Growing <span class="accent">Garden</span></div>
-    <div class="subtitle">All About Me · Tap a stone to answer</div>
+    <div class="title">Grammar <span class="accent">Garden</span></div>
+    <div class="subtitle">Tenses · Prepositions · Vocabulary · Tap a stone to answer</div>
   </header>
 
   <div class="garden-track" id="gardenTrack">
@@ -297,7 +327,7 @@
     <div class="stage" data-min="18"><div class="stage-icon">🌸</div><div class="stage-label">Bloom</div></div>
     <div class="stage" data-min="24"><div class="stage-icon">🌻</div><div class="stage-label">Sunflower</div></div>
   </div>
-  <div class="score-line">🌼 <strong id="scoreCount">0</strong> of 24 flowers picked</div>
+  <div class="score-line">🌿 <strong id="scoreCount">0</strong> of 24 correct</div>
 
   <div class="board">
     <div class="stones" id="stones"></div>
@@ -311,35 +341,39 @@
 
 <script>
 // ---------- HARD-CODED QUESTION DATA ----------
+// tag: "tense" | "preposition" | "vocabulary"
 const questions = [
-  { q: "Which one is a FEELING?", options: ["Happy", "Chair", "Table"], correct: 0 },
-  { q: "You use your NOSE to...", options: ["Hear music", "Smell flowers", "See colors"], correct: 1 },
-  { q: "Which one is part of YOUR body?", options: ["Elbow", "Umbrella", "Backpack"], correct: 0 },
-  { q: "If you feel sad, a good thing to do is...", options: ["Keep it a secret", "Talk to someone you trust", "Yell at a friend"], correct: 1 },
-  { q: "Which word means 'a place you were born and live'?", options: ["Hometown", "Homework", "Hobby"], correct: 0 },
-  { q: "Which one is something you can be GOOD at?", options: ["Drawing", "Raining", "Monday"], correct: 0 },
-  { q: "Your HEART helps your body by...", options: ["Pumping blood", "Making sound", "Growing hair"], correct: 0 },
-  { q: "Which one is a KIND thing to say to a friend?", options: ["You did great!", "Go away!", "That's silly."], correct: 0 },
-  { q: "Which of these is a MEMBER of a family?", options: ["Grandma", "Doctor", "Stranger"], correct: 0 },
-  { q: "You use your EARS to...", options: ["Taste food", "Hear sounds", "Touch things"], correct: 1 },
-  { q: "Which one describes a SAFE choice?", options: ["Wearing a seatbelt", "Talking to strangers", "Crossing without looking"], correct: 0 },
-  { q: "Which of these is something YOU can choose?", options: ["Your favorite color", "The weather today", "Your teacher's name"], correct: 0 },
-  { q: "If you make a mistake, it means...", options: ["You are bad at everything", "You are learning", "You should give up"], correct: 1 },
-  { q: "Which one is a HOBBY?", options: ["Sleeping in class", "Playing soccer", "Brushing teeth"], correct: 1 },
-  { q: "Your SKIN helps you feel...", options: ["Touch, like soft or rough", "Sounds, like loud or quiet", "Tastes, like sweet or sour"], correct: 0 },
-  { q: "Which is a way to show you are PROUD of yourself?", options: ["Smiling after finishing your work", "Hiding your work", "Ignoring your work"], correct: 0 },
-  { q: "Which one is an EMOTION, not a color?", options: ["Excited", "Green", "Purple"], correct: 0 },
-  { q: "A good FRIEND usually...", options: ["Shares and listens", "Never shares", "Only talks about themselves"], correct: 0 },
-  { q: "Which body part do you use to TASTE food?", options: ["Tongue", "Elbow", "Knee"], correct: 0 },
-  { q: "Which one is something that makes YOU special?", options: ["Your own ideas and talents", "Having the same shoes as someone", "Copying a classmate"], correct: 0 },
-  { q: "If a friend feels sad, you can...", options: ["Ask if they're okay", "Laugh at them", "Walk away"], correct: 0 },
-  { q: "Which one shows GROWTH mindset?", options: ["I can't do it yet, but I'll try", "I can't do it, so I quit", "I will never be good at this"], correct: 0 },
-  { q: "Your BRAIN helps you...", options: ["Think and learn", "Digest food", "Grow taller"], correct: 0 },
-  { q: "Which of these is a healthy way to calm down?", options: ["Take deep breaths", "Hold your breath forever", "Ignore your feelings"], correct: 0 }
+  { tag:"tense", q:"She ___ to school every day.", options:["go","goes","going"], correct:1 },
+  { tag:"tense", q:"They ___ watching TV right now.", options:["is","are","am"], correct:1 },
+  { tag:"tense", q:"I ___ my homework yesterday.", options:["finish","finished","finishing"], correct:1 },
+  { tag:"tense", q:"He ___ to the cinema tomorrow.", options:["will go","go","goed"], correct:0 },
+  { tag:"tense", q:"We ___ lived here since 2010.", options:["have","has","had"], correct:0 },
+  { tag:"preposition", q:"The cat is ___ the table.", options:["on","in","at"], correct:0 },
+  { tag:"preposition", q:"School starts ___ 8 o'clock.", options:["in","on","at"], correct:2 },
+  { tag:"preposition", q:"My birthday is ___ July.", options:["in","on","at"], correct:0 },
+  { tag:"preposition", q:"I was born ___ Monday.", options:["in","on","at"], correct:1 },
+  { tag:"preposition", q:"The keys are ___ the drawer.", options:["in","on","at"], correct:0 },
+  { tag:"preposition", q:"She jumped ___ the pool.", options:["into","on","at"], correct:0 },
+  { tag:"preposition", q:"The plane flew ___ the clouds.", options:["through","on","at"], correct:0 },
+  { tag:"vocabulary", q:"Which word means the same as 'happy'?", options:["glad","angry","tired"], correct:0 },
+  { tag:"vocabulary", q:"Which word means the opposite of 'big'?", options:["small","tall","wide"], correct:0 },
+  { tag:"tense", q:"Look! It ___ raining.", options:["is","was","will"], correct:0 },
+  { tag:"tense", q:"Yesterday, I ___ to the park.", options:["go","went","gone"], correct:1 },
+  { tag:"tense", q:"By next year, she ___ finished the course.", options:["will have","has","have"], correct:0 },
+  { tag:"preposition", q:"We arrived ___ the airport early.", options:["at","in","on"], correct:0 },
+  { tag:"preposition", q:"The book is ___ the shelf.", options:["on","in","at"], correct:0 },
+  { tag:"preposition", q:"He is good ___ maths.", options:["at","in","on"], correct:0 },
+  { tag:"preposition", q:"I'm looking forward ___ the party.", options:["to","for","at"], correct:0 },
+  { tag:"vocabulary", q:"Which word means 'a place where you sleep'?", options:["bedroom","kitchen","garden"], correct:0 },
+  { tag:"tense", q:"While I ___ dinner, the phone rang.", options:["was cooking","cook","cooked"], correct:0 },
+  { tag:"tense", q:"If it rains, we ___ stay inside.", options:["will","would","were"], correct:0 }
 ];
 
+const TAG_LABEL = { tense:"Tense", preposition:"Preposition", vocabulary:"Vocabulary" };
+
 // ---------- STATE ----------
-let answered = new Array(questions.length).fill(null); // null | true | false
+// each entry: null (unanswered) | { picked, correct: bool }
+let answered = new Array(questions.length).fill(null);
 let currentIndex = null;
 
 // ---------- BUILD BOARD ----------
@@ -347,26 +381,67 @@ const stonesEl = document.getElementById('stones');
 function renderStones(){
   stonesEl.innerHTML = '';
   questions.forEach((q, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'stone' + (answered[i] !== null ? ' done' : '');
-    btn.textContent = i + 1;
-    btn.onclick = () => openQuestion(i);
-    stonesEl.appendChild(btn);
+    const wrap = document.createElement('div');
+    wrap.className = 'stone-wrap';
+    wrap.id = 'stoneWrap-' + i;
+
+    const state = answered[i];
+    let stoneClass = 'stone';
+    if (state) stoneClass += state.correct ? ' correct' : ' wrong';
+
+    wrap.innerHTML = `
+      <button class="${stoneClass}" data-i="${i}">${i + 1}</button>
+      <div class="stone-burst" id="burst-${i}"></div>
+    `;
+    wrap.querySelector('.stone').onclick = () => openQuestion(i);
+    stonesEl.appendChild(wrap);
   });
 }
 
 function updateProgress(){
-  const solved = answered.filter(a => a !== null).length;
-  document.getElementById('scoreCount').textContent = solved;
+  const correctCount = answered.filter(a => a && a.correct).length;
+  document.getElementById('scoreCount').textContent = correctCount;
   document.querySelectorAll('.stage').forEach(stage => {
     const min = parseInt(stage.dataset.min, 10);
-    stage.classList.toggle('reached', solved >= min);
+    stage.classList.toggle('reached', correctCount >= min);
   });
+}
+
+// ---------- FIREWORK BURST ----------
+function fireworkAt(index){
+  const burst = document.getElementById('burst-' + index);
+  if (!burst) return;
+  const colors = ['#FFC93C', '#FF7A66', '#4EC5D6', '#4CAF7D', '#ffffff'];
+
+  const ring = document.createElement('div');
+  ring.className = 'ring';
+  burst.appendChild(ring);
+
+  const sparkCount = 12;
+  for (let s = 0; s < sparkCount; s++){
+    const spark = document.createElement('div');
+    spark.className = 'spark';
+    const angle = (Math.PI * 2 * s) / sparkCount + (Math.random() * 0.3);
+    const dist = 26 + Math.random() * 18;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist;
+    spark.style.setProperty('--dx', dx + 'px');
+    spark.style.setProperty('--dy', dy + 'px');
+    spark.style.background = colors[s % colors.length];
+    spark.style.animationDelay = (Math.random() * 0.06) + 's';
+    burst.appendChild(spark);
+  }
+
+  setTimeout(() => { burst.innerHTML = ''; }, 900);
 }
 
 // ---------- QUESTION OVERLAY ----------
 const overlay = document.getElementById('overlay');
 const qcard = document.getElementById('qcard');
+
+function formatQuestion(text){
+  return text.replace(/___/g, '<span class="blank">&nbsp;</span>');
+}
 
 function openQuestion(i){
   currentIndex = i;
@@ -375,33 +450,30 @@ function openQuestion(i){
 
   let optsHtml = data.options.map((opt, idx) => {
     let cls = 'opt';
-    let locked = already !== null ? ' locked' : '';
-    if (already !== null){
+    if (already){
+      cls += ' locked';
       if (idx === data.correct) cls += ' correct';
-      else if (already === false && idx === already.picked) {}
+      if (idx === already.picked && idx !== data.correct) cls += ' wrong';
     }
-    return `<button class="${cls}${locked}" data-idx="${idx}">
+    return `<button class="${cls}" data-idx="${idx}">
       <span class="bullet">${String.fromCharCode(65+idx)}</span>${opt}
     </button>`;
   }).join('');
 
   qcard.innerHTML = `
     <button class="qcard-close" onclick="closeOverlay()">×</button>
+    <div class="qtag">${TAG_LABEL[data.tag]}</div>
     <div class="qnum">Stone ${i+1} of ${questions.length}</div>
-    <div class="qtext">${data.q}</div>
+    <div class="qtext">${formatQuestion(data.q)}</div>
     <div class="options" id="optionsList">${optsHtml}</div>
-    <div class="feedback" id="feedback"></div>
-    <button class="qcard-next" id="nextBtn" onclick="nextStone()">Next stone →</button>
+    <div class="feedback" id="feedback">${already ? (already.correct ? "You got this one! 🌟" : "The correct answer is highlighted above.") : ''}</div>
   `;
 
   overlay.classList.add('active');
 
-  // if already answered, show the result immediately (view-only)
-  if (already !== null){
-    showResultState(already.picked, data.correct, true);
-  } else {
+  if (!already){
     document.querySelectorAll('#optionsList .opt').forEach(btn => {
-      btn.addEventListener('click', () => selectOption(parseInt(btn.dataset.idx,10)));
+      btn.addEventListener('click', () => selectOption(parseInt(btn.dataset.idx, 10)));
     });
   }
 }
@@ -410,39 +482,34 @@ function selectOption(idx){
   const data = questions[currentIndex];
   const isCorrect = idx === data.correct;
   answered[currentIndex] = { picked: idx, correct: isCorrect };
-  showResultState(idx, data.correct, false);
-  renderStones();
-  updateProgress();
-}
 
-function showResultState(pickedIdx, correctIdx, isReview){
-  const buttons = document.querySelectorAll('#optionsList .opt');
-  buttons.forEach((btn, idx) => {
+  // lock and highlight inside the card
+  document.querySelectorAll('#optionsList .opt').forEach((btn, i2) => {
     btn.classList.add('locked');
-    if (idx === correctIdx) btn.classList.add('correct');
-    if (idx === pickedIdx && idx !== correctIdx) btn.classList.add('wrong');
+    if (i2 === data.correct) btn.classList.add('correct');
+    if (i2 === idx && i2 !== data.correct) btn.classList.add('wrong');
   });
   const fb = document.getElementById('feedback');
-  const wasCorrect = pickedIdx === correctIdx;
-  fb.textContent = wasCorrect
-    ? (isReview ? "You got this one! 🌟" : "Yes! Well done! 🌟")
-    : (isReview ? "The correct answer is highlighted above." : "Good try! Here's the right one. 💛");
-  fb.className = 'feedback ' + (wasCorrect ? 'good' : 'bad');
-  document.getElementById('nextBtn').classList.add('show');
+  fb.textContent = isCorrect ? "Yes! Well done! 🌟" : "Good try! Here's the right one. 💛";
+  fb.className = 'feedback ' + (isCorrect ? 'good' : 'bad');
+
+  const answeredIndexAtSelection = currentIndex;
+
+  // brief pause so the learner sees the highlight, then return to the board
+  setTimeout(() => {
+    closeOverlay();
+    renderStones();
+    updateProgress();
+    if (isCorrect){
+      fireworkAt(answeredIndexAtSelection);
+    }
+    checkAllDone();
+  }, 1100);
 }
 
-function nextStone(){
-  const total = questions.length;
-  let next = currentIndex;
-  for (let step = 1; step <= total; step++){
-    const candidate = (currentIndex + step) % total;
-    if (answered[candidate] === null){ next = candidate; break; }
-  }
-  const allDone = answered.every(a => a !== null);
-  if (allDone){
-    showAllDone();
-  } else {
-    openQuestion(next);
+function checkAllDone(){
+  if (answered.every(a => a !== null)){
+    setTimeout(showAllDone, 500);
   }
 }
 
@@ -453,10 +520,11 @@ function showAllDone(){
     <div class="all-done">
       <div class="big-emoji">🌻</div>
       <h2>Your garden is in full bloom!</h2>
-      <p>You picked ${correctCount} of ${questions.length} flowers correctly.</p>
-      <button class="qcard-next show" style="position:static;margin-top:1.25rem;" onclick="closeOverlay()">Close</button>
+      <p>You got ${correctCount} of ${questions.length} correct.</p>
+      <button onclick="closeOverlay()">Close</button>
     </div>
   `;
+  overlay.classList.add('active');
 }
 
 function closeOverlay(){
